@@ -6,12 +6,12 @@
 
 #include "uapi/app_profile.h"
 
-// 2: allowlist v4 root profile flags
 static const __u32 KERNEL_SU_UAPI_VERSION = 2;
 
 /* Magic numbers for reboot hook to install fd */
 static const __u32 KSU_INSTALL_MAGIC1 = 0xDEADBEEF;
 static const __u32 KSU_INSTALL_MAGIC2 = 0xCAFEBABE;
+static const __u32 KSU_FULL_VERSION_STRING = 255;
 
 struct ksu_become_daemon_cmd {
     __u8 token[65]; /* Input: daemon token (null-terminated) */
@@ -176,5 +176,38 @@ static const __u32 KSU_IOCTL_ADD_TRY_UMOUNT = _IOC(_IOC_WRITE, 'K', 18, 0);
 static const __u32 KSU_IOCTL_SET_INIT_PGRP = _IO('K', 19);
 static const __u32 KSU_IOCTL_GET_SULOG_FD = _IOW('K', 20, struct ksu_get_sulog_fd_cmd);
 static const __u32 KSU_IOCTL_DISABLE_ESCAPE_TO_ROOT = _IO('K', 21);
+
+static const __u32 GLUESU_KPM_LOAD = 1;
+static const __u32 GLUESU_KPM_UNLOAD = 2;
+static const __u32 GLUESU_KPM_NUM = 3;
+static const __u32 GLUESU_KPM_LIST = 4;
+static const __u32 GLUESU_KPM_INFO = 5;
+static const __u32 GLUESU_KPM_CONTROL = 6;
+static const __u32 GLUESU_KPM_VERSION = 7;
+
+struct ksu_kpm_cmd {
+    __aligned_u64 __user control_code;
+    __aligned_u64 __user arg1;
+    __aligned_u64 __user arg2;
+    __aligned_u64 __user result_code;
+};
+
+struct ksu_get_full_version_cmd {
+    char version_full[255];
+};
+
+struct ksu_hook_type_cmd {
+    char hook_type[32];
+};
+
+struct ksu_enable_kpm_cmd {
+    __u8 enabled;
+};
+
+static const __u32 KSU_IOCTL_GET_FULL_VERSION = _IOC(_IOC_READ, 'K', 100, 0);
+static const __u32 KSU_IOCTL_HOOK_TYPE = _IOC(_IOC_READ, 'K', 101, 0);
+static const __u32 KSU_IOCTL_ENABLE_KPM = _IOC(_IOC_READ, 'K', 102, 0);
+static const __u32 KSU_IOCTL_LIST_TRY_UMOUNT = _IOC(_IOC_READ | _IOC_WRITE, 'K', 103, 0);
+static const __u32 KSU_IOCTL_KPM = _IOC(_IOC_READ | _IOC_WRITE, 'K', 200, 0);
 
 #endif

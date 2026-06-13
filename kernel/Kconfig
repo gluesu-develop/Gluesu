@@ -35,4 +35,15 @@ config KSU_DISABLE_POLICY
 	  Escalation will always use the default full root profile, and
 	  non-root handling will follow the global umount policy only.
 
+config KPM
+	bool "Kernel Patch Module support"
+	depends on KSU
+	select KALLSYMS
+	select KALLSYMS_ALL
+	default n
+	help
+	  Enable KPM (Kernel Patch Module) support. This allows loading
+	  KernelPatch-compatible kernel modules at runtime for kernel
+	  function hooking and extension.
+
 endmenu

@@ -1,0 +1,16 @@
+#ifndef __GLUESU_KPM_H
+#define __GLUESU_KPM_H
+
+#include <linux/types.h>
+#include <linux/ioctl.h>
+#include "uapi/supercall.h"
+
+int gluesu_handle_kpm(unsigned long control_code, unsigned long arg3,
+                      unsigned long arg4, unsigned long result_code);
+int gluesu_is_kpm_control_code(unsigned long control_code);
+int do_kpm(void __user *arg);
+
+#define CMD_KPM_CONTROL 1
+#define CMD_KPM_CONTROL_MAX 10
+
+#endif
