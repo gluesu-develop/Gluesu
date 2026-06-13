@@ -1,7 +1,7 @@
 use crate::module::{handle_updated_modules, prune_modules};
 use crate::utils::{is_safe_mode, switch_mnt_ns};
 use crate::{
-    assets, defs, ksucalls, kpm, metamodule, restorecon,
+    assets, defs, kpm, ksucalls, metamodule, restorecon,
     utils::{self},
 };
 use anyhow::{Context, Result};

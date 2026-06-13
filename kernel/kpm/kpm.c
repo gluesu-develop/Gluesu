@@ -40,9 +40,7 @@
 #endif
 #endif
 
-noinline NO_OPTIMIZE void gluesu_kpm_load_module_path(const char *path,
-                                                       const char *args,
-                                                       void *ptr, int *result)
+noinline NO_OPTIMIZE void gluesu_kpm_load_module_path(const char *path, const char *args, void *ptr, int *result)
 {
     pr_info("kpm: Stub function called (gluesu_kpm_load_module_path). "
             "path=%s args=%s ptr=%p\n",
@@ -52,8 +50,7 @@ noinline NO_OPTIMIZE void gluesu_kpm_load_module_path(const char *path,
 }
 EXPORT_SYMBOL(gluesu_kpm_load_module_path);
 
-noinline NO_OPTIMIZE void gluesu_kpm_unload_module(const char *name, void *ptr,
-                                                   int *result)
+noinline NO_OPTIMIZE void gluesu_kpm_unload_module(const char *name, void *ptr, int *result)
 {
     pr_info("kpm: Stub function called (gluesu_kpm_unload_module). "
             "name=%s ptr=%p\n",
@@ -71,8 +68,7 @@ noinline NO_OPTIMIZE void gluesu_kpm_num(int *result)
 }
 EXPORT_SYMBOL(gluesu_kpm_num);
 
-noinline NO_OPTIMIZE void gluesu_kpm_info(const char *name, char *buf,
-                                          int bufferSize, int *size)
+noinline NO_OPTIMIZE void gluesu_kpm_info(const char *name, char *buf, int bufferSize, int *size)
 {
     pr_info("kpm: Stub function called (gluesu_kpm_info). "
             "name=%s buffer=%p\n",
@@ -82,8 +78,7 @@ noinline NO_OPTIMIZE void gluesu_kpm_info(const char *name, char *buf,
 }
 EXPORT_SYMBOL(gluesu_kpm_info);
 
-noinline NO_OPTIMIZE void gluesu_kpm_list(void *out, int bufferSize,
-                                          int *result)
+noinline NO_OPTIMIZE void gluesu_kpm_list(void *out, int bufferSize, int *result)
 {
     pr_info("kpm: Stub function called (gluesu_kpm_list). "
             "buffer=%p size=%d\n",
@@ -91,8 +86,7 @@ noinline NO_OPTIMIZE void gluesu_kpm_list(void *out, int bufferSize,
 }
 EXPORT_SYMBOL(gluesu_kpm_list);
 
-noinline NO_OPTIMIZE void gluesu_kpm_control(const char *name, const char *args,
-                                             long arg_len, int *result)
+noinline NO_OPTIMIZE void gluesu_kpm_control(const char *name, const char *args, long arg_len, int *result)
 {
     pr_info("kpm: Stub function called (gluesu_kpm_control). "
             "name=%p args=%p arg_len=%ld\n",
@@ -110,8 +104,8 @@ noinline NO_OPTIMIZE void gluesu_kpm_version(char *buf, int bufferSize)
 }
 EXPORT_SYMBOL(gluesu_kpm_version);
 
-noinline int gluesu_handle_kpm(unsigned long control_code, unsigned long arg1,
-                               unsigned long arg2, unsigned long result_code)
+noinline int gluesu_handle_kpm(unsigned long control_code, unsigned long arg1, unsigned long arg2,
+                               unsigned long result_code)
 {
     int res = -1;
     if (control_code == GLUESU_KPM_LOAD) {
@@ -134,13 +128,10 @@ noinline int gluesu_handle_kpm(unsigned long control_code, unsigned long arg1,
                 goto invalid_arg;
             }
 
-            strncpy_from_user((char *)&kernel_args_buffer, (const char *)arg2,
-                              255);
+            strncpy_from_user((char *)&kernel_args_buffer, (const char *)arg2, 255);
         }
 
-        gluesu_kpm_load_module_path((const char *)&kernel_load_path,
-                                    (const char *)&kernel_args_buffer, NULL,
-                                    &res);
+        gluesu_kpm_load_module_path((const char *)&kernel_load_path, (const char *)&kernel_args_buffer, NULL, &res);
     } else if (control_code == GLUESU_KPM_UNLOAD) {
         char kernel_name_buffer[256];
 
@@ -153,8 +144,7 @@ noinline int gluesu_handle_kpm(unsigned long control_code, unsigned long arg1,
             goto invalid_arg;
         }
 
-        strncpy_from_user((char *)&kernel_name_buffer, (const char *)arg1,
-                          sizeof(kernel_name_buffer));
+        strncpy_from_user((char *)&kernel_name_buffer, (const char *)arg1, sizeof(kernel_name_buffer));
 
         gluesu_kpm_unload_module((const char *)&kernel_name_buffer, NULL, &res);
     } else if (control_code == GLUESU_KPM_NUM) {
@@ -173,12 +163,9 @@ noinline int gluesu_handle_kpm(unsigned long control_code, unsigned long arg1,
             goto invalid_arg;
         }
 
-        strncpy_from_user((char *)&kernel_name_buffer,
-                          (const char __user *)arg1,
-                          sizeof(kernel_name_buffer));
+        strncpy_from_user((char *)&kernel_name_buffer, (const char __user *)arg1, sizeof(kernel_name_buffer));
 
-        gluesu_kpm_info((const char *)&kernel_name_buffer, (char *)&buf,
-                        sizeof(buf), &size);
+        gluesu_kpm_info((const char *)&kernel_name_buffer, (char *)&buf, sizeof(buf), &size);
 
         if (!access_ok(arg2, size)) {
             goto invalid_arg;
@@ -221,18 +208,15 @@ noinline int gluesu_handle_kpm(unsigned long control_code, unsigned long arg1,
             goto invalid_arg;
         }
 
-        long name_len = strncpy_from_user(
-            (char *)&kpm_name, (const char __user *)arg1, sizeof(kpm_name));
+        long name_len = strncpy_from_user((char *)&kpm_name, (const char __user *)arg1, sizeof(kpm_name));
         if (name_len <= 0) {
             res = -EINVAL;
             goto exit;
         }
 
-        long arg_len = strncpy_from_user(
-            (char *)&kpm_args, (const char __user *)arg2, sizeof(kpm_args));
+        long arg_len = strncpy_from_user((char *)&kpm_args, (const char __user *)arg2, sizeof(kpm_args));
 
-        gluesu_kpm_control((const char *)&kpm_name, (const char *)&kpm_args,
-                           arg_len, &res);
+        gluesu_kpm_control((const char *)&kpm_name, (const char *)&kpm_args, arg_len, &res);
 
     } else if (control_code == GLUESU_KPM_VERSION) {
         char buffer[256] = { 0 };
@@ -253,8 +237,7 @@ exit:
 
     return 0;
 invalid_arg:
-    pr_err("kpm: invalid pointer detected! arg1: %px arg2: %px\n", (void *)arg1,
-           (void *)arg2);
+    pr_err("kpm: invalid pointer detected! arg1: %px arg2: %px\n", (void *)arg1, (void *)arg2);
     res = -EFAULT;
     goto exit;
 }
@@ -262,10 +245,7 @@ EXPORT_SYMBOL(gluesu_handle_kpm);
 
 int gluesu_is_kpm_control_code(unsigned long control_code)
 {
-    return (control_code >= CMD_KPM_CONTROL &&
-            control_code <= CMD_KPM_CONTROL_MAX) ?
-               1 :
-               0;
+    return (control_code >= CMD_KPM_CONTROL && control_code <= CMD_KPM_CONTROL_MAX) ? 1 : 0;
 }
 
 int do_kpm(void __user *arg)
@@ -278,17 +258,14 @@ int do_kpm(void __user *arg)
     }
 
     if (!access_ok(cmd.control_code, sizeof(int))) {
-        pr_err("kpm: invalid control_code pointer %px\n",
-               (void *)cmd.control_code);
+        pr_err("kpm: invalid control_code pointer %px\n", (void *)cmd.control_code);
         return -EFAULT;
     }
 
     if (!access_ok(cmd.result_code, sizeof(int))) {
-        pr_err("kpm: invalid result_code pointer %px\n",
-               (void *)cmd.result_code);
+        pr_err("kpm: invalid result_code pointer %px\n", (void *)cmd.result_code);
         return -EFAULT;
     }
 
-    return gluesu_handle_kpm(cmd.control_code, cmd.arg1, cmd.arg2,
-                             cmd.result_code);
+    return gluesu_handle_kpm(cmd.control_code, cmd.arg1, cmd.arg2, cmd.result_code);
 }

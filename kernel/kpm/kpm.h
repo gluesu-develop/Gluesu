@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 #ifndef __GLUESU_KPM_H
 #define __GLUESU_KPM_H
 
@@ -5,8 +6,7 @@
 #include <linux/ioctl.h>
 #include "uapi/supercall.h"
 
-int gluesu_handle_kpm(unsigned long control_code, unsigned long arg3,
-                      unsigned long arg4, unsigned long result_code);
+int gluesu_handle_kpm(unsigned long control_code, unsigned long arg3, unsigned long arg4, unsigned long result_code);
 int gluesu_is_kpm_control_code(unsigned long control_code);
 int do_kpm(void __user *arg);
 
