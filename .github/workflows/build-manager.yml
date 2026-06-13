@@ -282,12 +282,24 @@ jobs:
             echo "SIGN_KEYSTORE_PASSWORD=$PR_KEYSTORE_PASSWORD" >> $GITHUB_ENV
             echo "SIGN_KEY_PASSWORD=$PR_KEY_PASSWORD" >> $GITHUB_ENV
           else
-            test -n "$PROD_KEYSTORE"
-            echo "$PROD_KEYSTORE" | base64 -d > key.jks
-            echo "SIGN_KEYSTORE_FILE=key.jks" >> $GITHUB_ENV
-            echo "SIGN_KEY_ALIAS=$PROD_KEY_ALIAS" >> $GITHUB_ENV
-            echo "SIGN_KEYSTORE_PASSWORD=$PROD_KEYSTORE_PASSWORD" >> $GITHUB_ENV
-            echo "SIGN_KEY_PASSWORD=$PROD_KEY_PASSWORD" >> $GITHUB_ENV
+            if [ -z "$PROD_KEYSTORE" ]; then
+              echo "PROD_KEYSTORE not configured, generating temporary key"
+              KEYSTORE_PASSWORD=$(openssl rand -hex 32)
+              KEY_PASSWORD=$(openssl rand -hex 32)
+              keytool -genkeypair -alias tmp-key -keyalg RSA -keysize 2048 \
+                -validity 1 -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" \
+                -dname "CN=Gluesu CI Build" -storetype JKS -keystore key.jks
+              echo "SIGN_KEYSTORE_FILE=key.jks" >> $GITHUB_ENV
+              echo "SIGN_KEY_ALIAS=tmp-key" >> $GITHUB_ENV
+              echo "SIGN_KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD" >> $GITHUB_ENV
+              echo "SIGN_KEY_PASSWORD=$KEY_PASSWORD" >> $GITHUB_ENV
+            else
+              echo "$PROD_KEYSTORE" | base64 -d > key.jks
+              echo "SIGN_KEYSTORE_FILE=key.jks" >> $GITHUB_ENV
+              echo "SIGN_KEY_ALIAS=$PROD_KEY_ALIAS" >> $GITHUB_ENV
+              echo "SIGN_KEYSTORE_PASSWORD=$PROD_KEYSTORE_PASSWORD" >> $GITHUB_ENV
+              echo "SIGN_KEY_PASSWORD=$PROD_KEY_PASSWORD" >> $GITHUB_ENV
+            fi
           fi
 
       - name: Repack and resign
